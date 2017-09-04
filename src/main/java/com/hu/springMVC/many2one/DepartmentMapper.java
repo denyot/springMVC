@@ -4,4 +4,5 @@ public interface DepartmentMapper {
     void save(Department department);
 
     Department get(Long id);
+    ////
 }
