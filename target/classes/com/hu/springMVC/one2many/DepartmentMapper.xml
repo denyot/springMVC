@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--实体的增删改查-->
+<mapper namespace="com.hu.springMVC.one2many.DepartmentMapper">
+    <resultMap id="query_map" type="com.hu.springMVC.one2many.Department">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="employees" ofType="com.hu.springMVC.one2many.Employee">
+            <id column="e_id" property="id"/>
+            <result column="e_name" property="name"/>
+        </collection>
+    </resultMap>
+    <resultMap id="get_map" type="com.hu.springMVC.one2many.Department">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="employees" column="id" select="com.hu.springMVC.one2many.EmployeeMapper.getByDeptId"
+                    ofType="com.hu.springMVC.one2many.Employee"/>
+    </resultMap>
+    <insert id="save" parameterType="com.hu.springMVC.one2many.Department" keyColumn="id" keyProperty="id"
+            useGeneratedKeys="true">
+        INSERT INTO department (name) VALUES (#{name})
+    </insert>
+    <select id="get" resultMap="get_map">
+        select * from department where id = #{id}
+    </select>
+    <select id="query" resultMap="query_map">
+        SELECT d.id,d.name,e.`name` as e_name,e.id e_id  FROM department d LEFT JOIN employee e on (e.dept_id = d.id)
+    </select>
+    <update id="updateRelation">
+        UPDATE employee
+        SET dept_id = #{deptId}
+        WHERE id = #{emplId}
+    </update>
+    <delete id="delete">
+        DELETE FROM department
+        WHERE id = #{id}
+    </delete>
+    <delete id="deleteRelation">
+        UPDATE employee
+        SET dept_id = NULL
+        WHERE dept_id = #{deptId}
+    </delete>
+</mapper>
